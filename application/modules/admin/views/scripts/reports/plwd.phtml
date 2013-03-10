@@ -1,0 +1,28 @@
+<h1>Projects List with Description</h1>
+<table width="100%">
+	<thead>
+		<tr>
+			<th>Department</th>
+			<th>Name</th>
+			<th>Description</th>
+			<th>Author</th>
+            <th>Priority</th>
+		</tr>
+	</thead>
+	<tbody>
+        <?php foreach($this->results as $row): ?>
+            <tr>
+		<td><?php echo $row->department; ?></td>
+                <td><?php echo $row->name; ?></td>
+                <td><?php echo $row->description; ?></td>
+                <td><?php echo $row->authorName; ?></td>
+                <td><?php echo $row->priority; ?></td>
+            </tr>
+        <?php endforeach; ?>
+	</tbody>
+	<tfoot>
+		<tr>
+			<td colspan="5" align="right">Generated <?php echo date('m-d-y @ h:ia', time()); ?></td>
+		</tr>
+	</tfoot>
+</table>

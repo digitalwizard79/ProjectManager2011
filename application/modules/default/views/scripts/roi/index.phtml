@@ -1,0 +1,53 @@
+<script type="text/javascript" src="<?php echo $this->baseUrl(); ?>/js/tiny_mce/tiny_mce.js"></script>
+<script type="text/javascript" src="<?php echo $this->baseUrl(); ?>/js/jquery/jquery.jeditable-1.6.0.min.js"></script>
+<script type="text/javascript" src="<?php echo $this->baseUrl(); ?>/js/bpm/bpm.jquery.tinymce-editable.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function() {
+	$('#description').editable('<?php echo $this->baseUrl(); ?>/roi/save/section/description/', {
+		type:		'mce',
+		submit:		'Save',
+		cancel:		'Cancel',
+		indicator:	'Saving...',
+		tooltip:	'Click to Edit...',
+		width:		'500px',
+		height:		'300px'
+	});
+});
+</script>
+
+<h1>ROI Analysis '<?php echo $this->projectName; ?>'</h1>
+
+When describing the ROI for your project, please remember to include the following information:
+
+<ul>
+	<li>Revenue Increase or Expense Decreases</li>
+	<li>Business Unit cost to develop</li>
+	<li>IT Cost to develop and maintain</li>
+	<li>Cost to produce marketing in the case of new products</li>
+	<li>Training of both staff and agents</li>
+	<li>The need to purchase equipment</li>
+	<li>The need to engage third party vendors</li>
+	<li>Expected claims and claims costs</li>
+</ul>
+
+<h2>1. Return on Investment Analysis</h2>
+	<blockquote>
+		<div id="description">
+			<?php echo ($this->description == '' ? 'No Text Supplied' : $this->description); ?>
+		</div>
+	</blockquote>
+
+<form method="post" action="<?php echo $this->baseUrl(); ?>/roi/submit">
+	<h2>Project Approval</h2>
+	<?php if($this->project->approved == -2): ?>
+		Project has been submitted.
+	<?php elseif($this->project->approved == -1): ?>
+		Project has been declined.
+	<?php elseif($this->project->approved == 0): ?>
+		<input type="submit" id="submitProject" value="Submit Project for Approval">
+	<?php elseif($this->project->approved == 1): ?>
+		Project has been approved.
+	<?php endif; ?>
+</form>
+

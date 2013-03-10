@@ -1,0 +1,40 @@
+<script type="text/javascript">
+function addSignature(section) {
+	$.ajax({
+		data:   {
+			name:		$('#newSig').val(),
+			'section':	section
+		},
+		dataType:   'json',
+		success:    function(rsp, status) {
+			loadSignatures('sdd');
+			$('#newSig').val("");
+		},
+		type:       'POST',
+		url:        '<?php echo $this->baseUrl(); ?>/signatures/add/'
+	});
+}
+
+function loadSignatures(section) {
+	$('#signatures').load('<?php echo $this->baseUrl(); ?>/signatures/generate/type/8');
+}
+
+$(document).ready(function() {
+	loadSignatures('Design');
+});
+</script>
+
+<h1>Deployment Phase of '<?php echo $this->projectName; ?>'</h1>
+
+<p>
+Once the project has been deployed, please sign off on this step.
+</p>
+
+<h2>Signatures</h2>
+<div id="signatures">
+</div>
+
+<div id="addSig">
+<label for="newSig">Name:</label><input type="text" name="newSig" id="newSig">
+<button onClick="addSignature('Deployment');">Add Signature</button>
+</div>

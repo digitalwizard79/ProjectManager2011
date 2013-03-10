@@ -1,0 +1,140 @@
+<script type="text/javascript" src="<?php echo $this->baseUrl(); ?>/js/bpm/bpm.jquery.zebra-stripe.js"></script>
+<script type="text/javascript" src="<?php echo $this->baseUrl(); ?>/js/jquery/jquery.jeditable-1.6.0.min.js"></script>
+
+<script type="text/javascript">
+function addSignature(section) {
+	$.ajax({
+		data:   {
+			name:		$('#newSig').val(),
+			'section':	section
+		},
+		dataType:   'json',
+		success:    function(rsp, status) {
+			loadSignatures('sdd');
+			$('#newSig').val("");
+		},
+		type:       'POST',
+		url:        '<?php echo $this->baseUrl(); ?>/signatures/add/'
+	});
+}
+
+function loadSignatures(section) {
+	$('#signatures').load('<?php echo $this->baseUrl(); ?>/signatures/generate/type/4');
+}
+
+$(document).ready(function() {
+	$('.stripe').bpm_stripe();
+
+	loadSignatures('Implementation');
+
+	$('#addTaskButton').click(function() {
+		$('#addTaskDialog').dialog('open');
+	});
+
+	$('.edit').editable('<?php echo $this->baseUrl(); ?>/implementation/updatecell', {
+		indicator:	'Saving...',
+		tooltip:	'Click to Edit...',
+		callback:	function(value, settings) {
+			window.location = "<?php echo $this->baseUrl(); ?>/implementation";
+		}
+	});
+
+	$('.edit_area').editable('<?php echo $this->baseUrl(); ?>/implementation/updatecell', {
+		indicator:	'Saving...',
+		tooltip:	'Click to Edit...',
+		type:		'textarea',
+		submit:		'OK',
+		cancel:		'Cancel'
+	});
+
+	$('#addTaskDialog').dialog({
+		bgiframe:	true,
+		autoOpen:	false,
+		modal:		true,
+		width:		400,
+		buttons:	{
+			'Save': function() {
+				$.ajax({
+					data:		{
+						feature:		$('#feature').val(),
+						priority:		$('#priority').val(),
+						estimateOrig:	$('#estimateOrig').val(),
+						task:			$('#task').val()
+					},
+					dataType:	'json',
+					error:		function(rq, status, error) {
+						alert('There was a problem adding you as a user: ' + error);
+					},
+					success:	function(rsp, status) {
+						if(rsp.status == 1) {
+							window.location = "<?php echo $this->baseUrl(); ?>/implementation";
+						} else {
+							alert('There was a problem adding the task: ' + rsp.message);
+						}
+					},
+					type:		'POST',
+					url:		'<?php echo $this->baseUrl(); ?>/implementation/addtask'
+				});
+			}
+		}
+	});
+});
+</script>
+
+<h1>Tasks for Implementation</h1>
+
+<table class="stripe" width="100%">
+	<thead>
+		<tr>
+			<th>Feature</th>
+			<th>Priority</th>
+			<th>Task</th>
+			<th>Original Estimate</th>
+			<th>Current Estimate</th>
+			<th>Elapsed</th>
+			<th>Remaining</th>
+			<th>Status</th>
+			<th>Date Added</th>
+			<th>Date Completed</th>
+			<th>Completed By</th>
+		</tr>
+	</thead>
+	<tbody>
+		<?php if(count($this->tasks)): ?>
+			<?php echo $this->partialLoop('implementation/_partials/task.phtml', $this->tasks); ?>
+		<?php else: ?>
+			<tr>
+				<td colspan="11" align="center"><b>There are no tasks for this project.</b></td>
+			</tr>
+		<?php endif; ?>
+	</tbody>
+	<tfoot>
+		<tr>
+			<td colspan="11" align="right"><button id="addTaskButton">Add Task</button></td>
+		</tr>
+	</tfoot>
+</table>
+
+<h2>Signatures</h2>
+<div id="signatures">
+</div>
+
+<div id="addSig">
+<label for="newSig">Name:</label><input type="text" name="newSig" id="newSig">
+<button onClick="addSignature('Implementation');">Add Signature</button>
+</div>
+
+<div id="addTaskDialog" title="Add New Task" class="left">
+	<form method="POST" id="addTaskForm">
+		<dl>
+			<dt>Feature:</dt>
+				<dd><input id="feature" name="feature"></dd>
+			<dt>Priority:</dt>
+				<dd><input id="priority" name="priority"></dd>
+			<dt>Original Estimate:</dt>
+				<dd><input id="estimateOrig" name="estimateOrig"></dd>
+			<dt>Task:</dt>
+				<dd><textarea id="task" name="task" style="width: 300px; height: 100px"></textarea></dd>
+		</dl>
+	</form>
+</div>

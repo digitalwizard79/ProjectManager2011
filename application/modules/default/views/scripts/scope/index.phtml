@@ -1,0 +1,178 @@
+<script type="text/javascript" src="<?php echo $this->baseUrl(); ?>/js/tiny_mce/tiny_mce.js"></script>
+<script type="text/javascript" src="<?php echo $this->baseUrl(); ?>/js/jquery/jquery.jeditable-1.6.0.min.js"></script>
+<script type="text/javascript" src="<?php echo $this->baseUrl(); ?>/js/bpm/bpm.jquery.tinymce-editable.js"></script>
+
+<script type="text/javascript">
+function addSignature(section) {
+	$.ajax({
+		data:   {
+			name:		$('#newSig').val(),
+			'section':	section
+		},
+		dataType:   'json',
+		success:    function(rsp, status) {
+			loadSignatures('scope');
+			$('#newSig').val("");
+		},
+		type:       'POST',
+		url:        '<?php echo $this->baseUrl(); ?>/signatures/add/'
+	});
+}
+
+function loadSignatures() {
+	$('#signatures').load('<?php echo $this->baseUrl(); ?>/signatures/generate/type/2');
+}
+
+$(document).ready(function() {
+	loadSignatures('Project Scope');
+
+	$('#description').editable('<?php echo $this->baseUrl(); ?>/scope/save/section/description/', {
+		type:		'mce',
+		submit:		'Save',
+		cancel:		'Cancel',
+		indicator:	'Saving...',
+		tooltip:	'Click to Edit...',
+		width:		'500px',
+		height:		'300px'
+	});
+
+	$('#roiJustification').editable('<?php echo $this->baseUrl(); ?>/scope/save/section/roiJustification/', {
+		type:		'mce',
+		submit:		'Save',
+		cancel:		'Cancel',
+		indicator:	'Saving...',
+		tooltip:	'Click to Edit...',
+		width:		'500px',
+		height:		'300px'
+	});
+
+	$('#teamMembers').editable('<?php echo $this->baseUrl(); ?>/scope/save/section/teamMembers/', {
+		type:		'mce',
+		submit:		'Save',
+		cancel:		'Cancel',
+		indicator:	'Saving...',
+		tooltip:	'Click to Edit...',
+		width:		'500px',
+		height:		'300px'
+	});
+
+	$('#teamAssignments').editable('<?php echo $this->baseUrl(); ?>/scope/save/section/teamAssignments/', {
+		type:		'mce',
+		submit:		'Save',
+		cancel:		'Cancel',
+		indicator:	'Saving...',
+		tooltip:	'Click to Edit...',
+		width:		'500px',
+		height:		'300px'
+	});
+
+	$('#targetDate').editable('<?php echo $this->baseUrl(); ?>/scope/save/section/targetDate/', {
+		type:		'mce',
+		submit:		'Save',
+		cancel:		'Cancel',
+		indicator:	'Saving...',
+		tooltip:	'Click to Edit...',
+		width:		'500px',
+		height:		'300px'
+	});
+
+	$('#internalTesting').editable('<?php echo $this->baseUrl(); ?>/scope/save/section/internalTesting/', {
+		type:		'mce',
+		submit:		'Save',
+		cancel:		'Cancel',
+		indicator:	'Saving...',
+		tooltip:	'Click to Edit...',
+		width:		'500px',
+		height:		'300px'
+	});
+
+	$('#externalTesting').editable('<?php echo $this->baseUrl(); ?>/scope/save/section/externalTesting/', {
+		type:		'mce',
+		submit:		'Save',
+		cancel:		'Cancel',
+		indicator:	'Saving...',
+		tooltip:	'Click to Edit...',
+		width:		'500px',
+		height:		'300px'
+	});
+
+	$('#training').editable('<?php echo $this->baseUrl(); ?>/scope/save/section/training/', {
+		type:		'mce',
+		submit:		'Save',
+		cancel:		'Cancel',
+		indicator:	'Saving...',
+		tooltip:	'Click to Edit...',
+		width:		'500px',
+		height:		'300px'
+	});
+});
+</script>
+
+<h1>Initial Project Scope '<?php echo $this->projectName; ?>'</h1>
+
+<h2>1. Project Description</h2>
+	<blockquote>
+		<div id="description">
+			<?php echo $this->description; ?>
+		</div>
+	</blockquote>
+
+<h2>2. ROI Justification</h2>
+	<blockquote>
+		<div id="roiJustification">
+			<?php echo $this->roiJustification; ?>
+		</div>
+	</blockquote>
+
+<h2>3. Team Members</h2>
+	<blockquote>
+		<div id="teamMembers">
+			<?php echo $this->teamMembers; ?>
+		</div>
+	</blockquote>
+
+<h2>4. Team Assignments</h2>
+	<blockquote>
+		<div id="teamAssignments">
+			<?php echo $this->teamAssignments; ?>
+		</div>
+	</blockquote>
+
+<h2>5. Target Date for Project Completion</h2>
+	<blockquote>
+		<div id="targetDate">
+			<?php echo $this->targetDate; ?>
+		</div>
+	</blockquote>
+
+<h2>6. Internal Testing</h2>
+	<blockquote>
+		<div id="internalTesting">
+			<?php echo $this->internalTesting; ?>
+		</div>
+	</blockquote>
+
+<h2>7. External Testing</h2>
+	<blockquote>
+		<div id="externalTesting">
+			<?php echo $this->externalTesting; ?>
+		</div>
+	</blockquote>
+
+<h2>8. Training Needs</h2>
+	<blockquote>
+		<div id="training">
+			<?php echo $this->training; ?>
+		</div>
+	</blockquote>
+
+
+<h2>Signatures</h2>
+<div id="signatures">
+</div>
+
+<div id="addSig">
+<label for="newSig">Name:</label><input type="text" name="newSig" id="newSig">
+<button onClick="addSignature('Project Scope');">Add Signature</button>
+</div>
+

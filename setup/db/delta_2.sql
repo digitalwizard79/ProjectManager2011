@@ -1,0 +1,1 @@
+ALTER TABLE `u_Users` ADD `numProjects` INT NOT NULL ;

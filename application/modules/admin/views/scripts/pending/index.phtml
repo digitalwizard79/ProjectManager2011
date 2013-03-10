@@ -1,0 +1,22 @@
+<h1>Projects Pending Approval</h1>
+
+<table width="100%">
+	<thead>
+		<tr>
+			<th>Name</th>
+			<th>Description</th>
+			<th>Date Created</th>
+			<th>Author</th>
+		</tr>
+	</thead>
+	<tbody>
+		<?php foreach($this->projects as $project): ?>
+			<tr>
+				<td><a href="<?php echo $this->baseUrl(); ?>/admin/pending/view/project/<?php echo $project->id;?>"><?php echo $project->name; ?></a></td>
+				<td><?php echo $project->description; ?></td>
+				<td><?php echo $project->dateCreated; ?></td>
+				<td><?php echo $project->authorName; ?></td>
+			</tr>
+		<?php endforeach; ?>
+	</tbody>
+</table>

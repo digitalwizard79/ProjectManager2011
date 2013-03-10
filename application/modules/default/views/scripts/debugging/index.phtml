@@ -1,0 +1,70 @@
+<script type="text/javascript" src="<?php echo $this->baseUrl(); ?>/js/bpm/bpm.jquery.zebra-stripe.js"></script>
+
+<script type="text/javascript">
+function addSignature(section) {
+	$.ajax({
+		data:   {
+			name:		$('#newSig').val(),
+			'section':	section
+		},
+		dataType:   'json',
+		success:    function(rsp, status) {
+			loadSignatures('sdd');
+			$('#newSig').val("");
+		},
+		type:       'POST',
+		url:        '<?php echo $this->baseUrl(); ?>/signatures/add/'
+	});
+}
+
+function loadSignatures(section) {
+	$('#signatures').load('<?php echo $this->baseUrl(); ?>/signatures/generate/type/5');
+}
+
+$(document).ready(function() {
+	loadSignatures('Debugging');
+	$('.stripe').bpm_stripe();
+});
+</script>
+
+<h1>Debugging Phase of '<?php echo $this->projectName; ?>'</h1>
+
+<table width="100%" class="stripe">
+	<thead>
+		<tr>
+			<th>Bug ID</th>
+			<th>Category</th>
+			<th>Severity</th>
+			<th>Status</th>
+			<th>Assigned To</th>
+			<th>Summary</th>
+		</tr>
+	</thead>
+	<tbody>
+		<?php foreach($this->bugs as $bug): ?>
+			<tr>
+				<td align="center"><a href="<?php echo $this->baseUrl(); ?>/debugging/view/id/<?php echo $bug->id; ?>"><?php echo str_pad($bug->id, 5, '0', STR_PAD_LEFT); ?></a></td>
+				<td><?php echo $bug->categoryName; ?></td>
+				<td><?php echo $bug->severityName; ?></td>
+				<td><?php echo $bug->status ?></td>
+				<td><a href="mailto:<?php echo $bug->assignedEmail; ?>"><?php echo $bug->assignedName ?></a></td>
+				<td><?php echo $bug->summary ?></td>
+			</tr>
+		<?php endforeach; ?>
+	</tbody>
+	<tfoot>
+		<tr>
+			<td colspan="6" align="right"><a href="<?php echo $this->baseUrl(); ?>/debugging/addbug">Report New Bug</a></td>
+		</tr>
+	</tfoot>
+</table>
+
+<h2>Signatures</h2>
+<div id="signatures">
+</div>
+
+<div id="addSig">
+<label for="newSig">Name:</label><input type="text" name="newSig" id="newSig">
+<button onClick="addSignature('Debugging');">Add Signature</button>
+</div>
+

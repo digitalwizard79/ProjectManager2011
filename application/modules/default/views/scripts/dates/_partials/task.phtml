@@ -1,0 +1,14 @@
+<tr>
+	<td valign="top">
+		<div id="milestone_<?php echo $this->id; ?>" class="edit"><?php echo $this->milestone; ?></div>
+	</td>
+	<td valign="top">
+		<div id="description_<?php echo $this->id; ?>" class="edit_area"><?php echo $this->description; ?></div>
+	</td>
+	<td valign="top" align="right">
+		<div id="dateTarget_<?php echo $this->id; ?>" class="edit"><?php echo date('m/d/Y', strtotime($this->dateTarget)); ?></div>
+	</td>
+	<td valign="top" align="right">
+		<div id="dateAdded_<?php echo $this->id; ?>" class="edit"><?php echo date('m/d/Y', strtotime($this->dateCreated)); ?></div>
+	</td>
+</tr>

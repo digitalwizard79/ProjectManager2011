@@ -1,0 +1,130 @@
+<script type="text/javascript" src="<?php echo $this->baseUrl(); ?>/js/bpm/bpm.jquery.zebra-stripe.js"></script>
+<script type="text/javascript" src="<?php echo $this->baseUrl(); ?>/js/jquery/jquery.jeditable-1.6.0.min.js"></script>
+
+<script type="text/javascript">
+function addSignature(section) {
+	$.ajax({
+		data:   {
+			name:		$('#newSig').val(),
+			'section':	section
+		},
+		dataType:   'json',
+		success:    function(rsp, status) {
+			loadSignatures('sdd');
+			$('#newSig').val("");
+		},
+		type:       'POST',
+		url:        '<?php echo $this->baseUrl(); ?>/signatures/add/'
+	});
+}
+
+function loadSignatures(section) {
+	$('#signatures').load('<?php echo $this->baseUrl(); ?>/signatures/generate/type/3');
+}
+
+$(document).ready(function() {
+	$('.stripe').bpm_stripe();
+
+	loadSignatures('Implementation');
+
+	$('#addTaskButton').click(function() {
+		$('#addTaskDialog').dialog('open');
+	});
+
+	$('.edit').editable('<?php echo $this->baseUrl(); ?>/dates/updatecell', {
+		indicator:	'Saving...',
+		tooltip:	'Click to Edit...',
+		callback:	function(value, settings) {
+			window.location = "<?php echo $this->baseUrl(); ?>/dates/";
+		}
+	});
+
+	$('.edit_area').editable('<?php echo $this->baseUrl(); ?>/dates/updatecell', {
+		indicator:	'Saving...',
+		tooltip:	'Click to Edit...',
+		type:		'textarea',
+		submit:		'OK',
+		cancel:		'Cancel'
+	});
+
+	$('#addTaskDialog').dialog({
+		bgiframe:	true,
+		autoOpen:	false,
+		modal:		true,
+		width:		400,
+		buttons:	{
+			'Save': function() {
+				$.ajax({
+					data:		{
+						milestone:		$('#milestone').val(),
+						dateTarget:		$('#dateTarget').val(),
+						description:	$('#description').val()
+					},
+					dataType:	'json',
+					error:		function(rq, status, error) {
+						alert('There was a problem adding you as a user: ' + error);
+					},
+					success:	function(rsp, status) {
+						if(rsp.status == 1) {
+							window.location = "<?php echo $this->baseUrl(); ?>/dates";
+						} else {
+							alert('There was a problem adding the task: ' + rsp.message);
+						}
+					},
+					type:		'POST',
+					url:		'<?php echo $this->baseUrl(); ?>/dates/addtask'
+				});
+			}
+		}
+	});
+});
+</script>
+
+<h1>Target Dates</h1>
+
+<table class="stripe" width="100%">
+	<thead>
+		<tr>
+			<th>Milestone</th>
+			<th>Description</th>
+			<th>Target Date</th>
+			<th>Creation Date</th>
+		</tr>
+	</thead>
+	<tbody>
+		<?php if(count($this->tasks)): ?>
+			<?php echo $this->partialLoop('dates/_partials/task.phtml', $this->tasks); ?>
+		<?php else: ?>
+			<tr>
+				<td colspan="11" align="center"><b>There are no target dates for this project.</b></td>
+			</tr>
+		<?php endif; ?>
+	</tbody>
+	<tfoot>
+		<tr>
+			<td colspan="11" align="right"><button id="addTaskButton">Add Milestone</button></td>
+		</tr>
+	</tfoot>
+</table>
+
+<h2>Signatures</h2>
+<div id="signatures">
+</div>
+
+<div id="addSig">
+<label for="newSig">Name:</label><input type="text" name="newSig" id="newSig">
+<button onClick="addSignature('Target Dates');">Add Signature</button>
+</div>
+
+<div id="addTaskDialog" title="Add New Milestone" class="left">
+	<form method="POST" id="addTaskForm">
+		<dl>
+			<dt>Milestone:</dt>
+				<dd><input id="milestone" name="milestone"></dd>
+			<dt>Target Date:</dt>
+				<dd><input id="dateTarget" name="dateTarget"></dd>
+			<dt>Description:</dt>
+				<dd><textarea id="description" name="description" style="width: 300px; height: 100px"></textarea></dd>
+		</dl>
+	</form>
+</div>

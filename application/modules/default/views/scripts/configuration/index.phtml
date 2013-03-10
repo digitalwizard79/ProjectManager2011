@@ -1,0 +1,260 @@
+<script type="text/javascript" src="<?php echo $this->baseUrl(); ?>/js/bpm/bpm.jquery.zebra-stripe.js"></script>
+
+<script type="text/javascript">
+function addSig(section) {
+	$('#section').val(section);
+
+	$('#addReqSigDialog').dialog('open');
+}
+
+function completeProject() {
+	$.ajax({
+		dataType:	'json',
+		error:		function(rq, status, error) {
+			alert('There was a problem completing the project: ' + error);
+		},
+		success:	function(rsp, status) {
+			if(rsp.status == 1) {
+				alert('Project has been closed');
+				window.location	= '<?php echo $this->baseUrl(); ?>/';
+			} else {
+				alert('An error occurred: ' + rsp.message);
+			}
+		},
+		type:		'POST',
+		url:		'<?php echo $this->baseUrl(); ?>/projects/complete/pid/<?php echo $this->projectId; ?>'
+	});
+}
+
+function removeSig(id) {
+	$.ajax({
+		data:		{ sid: id },
+		dataType:	'json',
+		error:		function(rq, status, error) {
+			alert('There was a problem removing the signature: ' + error);
+		},
+		success:	function(rsp, status) {
+			if(rsp.status == 1) {
+				window.location	= '<?php echo $this->baseUrl(); ?>/configuration';
+			} else {
+				alert('Signature was not removed: ' + rsp.message);
+			}
+		},
+		type:		'POST',
+		url:		'<?php echo $this->baseUrl(); ?>/signatures/removereq/'
+	});
+}
+
+function removeTeamMember(id) {
+	$.ajax({
+		data:		{ uid: id },
+		dataType:	'json',
+		error:		function(rq, status, error) {
+			alert('There was a problem removing the user: ' + error);
+		},
+		success:	function(rsp, status) {
+			if(rsp.status == 1) {
+				window.location	= '<?php echo $this->baseUrl(); ?>/configuration';
+			} else {
+				alert('User was not removed: ' + rsp.message);
+			}
+		},
+		type:		'POST',
+		url:		'<?php echo $this->baseUrl(); ?>/teams/remove/'
+	});
+}
+
+$(document).ready(function() {
+	$('#teamMembers').bpm_stripe();
+
+	$('#newEmail').change(function() {
+		$.ajax({
+			data:		{ email: $('#newEmail').val() },
+			dataType:	'json',
+			error:		function(rq, status, error) {
+				alert('There was a problem searching for the user: ' + error);
+			},
+			success:	function(rsp, status) {
+				$('#newName').val(rsp.name);
+				$('#existingId').val(rsp.id);
+			},
+			type:		'POST',
+			url:		'<?php echo $this->baseUrl(); ?>/teams/search/'
+		});
+	});
+
+	$('#addTeamMemberButton').click(function() {
+		$('#addNewTeamMemberDialog').dialog('open');
+	});
+
+	$('#addNewTeamMemberDialog').dialog({
+		bgiframe:	true,
+		autoOpen:	false,
+		modal:		true,
+		buttons:	{
+			'Add Team Member': function() {
+				$.ajax({
+					data:		{
+						email:	$('#newEmail').val(),
+						name:	$('#newName').val(),
+						id:	 	$('#existingId').val()
+					},
+					dataType:	'json',
+					error:		function(rq, status, error) {
+						alert('There was a problem searching for the user: ' + error);
+					},
+					success:	function(rsp, status) {
+						if(rsp.status == 1) {
+							$('#addNewTeamMemberDialog').dialog('close');
+							alert('New Team Member Added');
+
+							window.location	= '<?php echo $this->baseUrl(); ?>/configuration';
+						} else if(rsp.status == -1) {
+							alert('This user is already a member of this project.');
+						} else {
+							alert('There was a problem adding the member to the team.');
+						}
+					},
+					type:		'POST',
+					url:		'<?php echo $this->baseUrl(); ?>/teams/add/'
+				});
+			}
+		}
+	});
+
+	$('#addReqSigDialog').dialog({
+		bgiframe:	true,
+		autoOpen:	false,
+		modal:		true,
+		buttons:	{
+			'Add Signature': function() {
+				$.ajax({
+					data:		{
+						section:	$('#section').val(),
+						uid:		$('#uid').val()
+					},
+					dataType:	'json',
+					error:		function(rq, status, error) {
+						alert('There was a problem adding the signature: ' + rq);
+					},
+					success:	function(rsp, status) {
+						if(rsp.status == 1) {
+							window.location	= '<?php echo $this->baseUrl(); ?>/configuration';
+						} else {
+							alert('There was a problem adding the signature: ' + rsp.message);
+						}
+					},
+					type:		'POST',
+					url:		'<?php echo $this->baseUrl(); ?>/signatures/addreq/'
+				});
+			}
+		}
+	});
+});
+
+</script>
+
+<h1>Project Configuration</h1>
+
+<div>
+	<h2>Project Details</h2>
+	<form method="post" action="<?php echo $this->baseUrl(); ?>/configuration/save">
+	<dl>
+		<dt>Project Name:</dt>
+			<dd><input type="text" name="name" id="name" value="<?php echo $this->name; ?>" style="width: 300px"></dd>
+		<dt>Project Description:</dt>
+			<dd><textarea name="description" id="description" style="width: 300px; height: 200px;"><?php echo $this->description; ?></textarea></dd>
+	</dl>
+	<input type="submit" value="Update Project">
+	</form>
+</div>
+
+<div>
+	<h2>Complete Project</h2>
+	Completing a project will remove it from your list and make further work on the project impossible without having the project reopened by a project manager.
+
+	<p>
+		<button id="closeProjectButton" onClick="completeProject();">Close Project</button>
+</div>
+
+<div>
+	<h2>Team Members</h2>
+	<table class="stripe" id="teamMembers">
+		<thead>
+			<tr>
+				<th>Name</th>
+				<th>E-Mail Address</th>
+				<th>Remove</th>
+			</tr>
+		</thead>
+		<tbody>
+			<?php foreach($this->teamMembers as $member): ?>
+				<tr>
+					<td><a href="mailto:<?php echo $member->email; ?>"><?php echo $member->name; ?></a></td>
+					<td><a href="mailto:<?php echo $member->email; ?>"><?php echo $member->email; ?></a></td>
+					<td class="center"><a href="#" onClick="removeTeamMember(<?php echo $member->id ?>);"><img src="<?php echo $this->baseUrl(); ?>/images/famfamfam_silk/delete.png"></a></td>
+				</tr>
+			<?php endforeach; ?>
+		</tbody>
+		<tfoot>
+			<tr>
+				<td colspan="3" class="right"><button id="addTeamMemberButton" name="addTeamMemberButton">New Team Member</button></td>
+			</tr>
+		</tfoot>
+	</table>
+</div>
+
+<div>
+	<h2>Required Signatures</h2>
+	<table class="stripe" id="signatures">
+		<tbody>
+			<?php $previousSection = ''; foreach($this->requiredSigs as $sig): ?>
+				<?php if($sig->sectionName != $previousSection): $previousSection = $sig->sectionName; ?>
+					<tr>
+						<th><?php echo $sig->sectionName; ?></th>
+						<th><a href="javascript:addSig('<?php echo $sig->sectionId; ?>');"><img src="<?php echo $this->baseUrl(); ?>/images/famfamfam_silk/add.png"></a></th>
+					</tr>
+				<?php endif; ?>
+				<tr>
+					<td><?php echo $sig->name ?></td>
+					<td><a href="javascript:removeSig('<?php echo $sig->id; ?>');"><img src="<?php echo $this->baseUrl(); ?>/images/famfamfam_silk/delete.png"></a></td>
+				</tr>
+			<?php endforeach; ?>
+		</tbody>
+	</table>
+</div>
+
+<div id="addNewTeamMemberDialog" title="Add New Team Member" class="left">
+	<form>
+		<fieldset>
+			<dl>
+				<dt>E-mail Address:</dt>
+					<dd><input type="text" name="newEmail" id="newEmail" class="text ui-widget ui-corner-all" /></dd>
+				<dt>Name:</dt>
+					<dd><input type="text" name="newName" id="newName" class="text ui-widget ui-corner-all" /></dd>
+			</dl>
+			<input type="hidden" name="existingId" id="existingId" value="" />
+		</fieldset>
+	</form>
+</div>
+
+<div id="addReqSigDialog" title="Add Required Signature" class="left">
+	<dl>
+		<dt>Section:</dt>
+			<dd>
+				<select id="section" name="section">
+					<?php foreach($this->sections as $sec): ?>
+						<option value="<?php echo $sec->id ?>"><?php echo $sec->name ?></option>
+					<?php endforeach; ?>
+				</select>
+			</dd>
+		<dt>Team Member:</dt>
+			<dd>
+				<select id="uid" name="uid">
+					<?php foreach($this->teamMembers as $member): ?>
+						<option value="<?php echo $member->id ?>"><?php echo $member->name; ?></option>
+					<?php endforeach; ?>
+				</select>
+			</dd>
+	</dl>
+</div>

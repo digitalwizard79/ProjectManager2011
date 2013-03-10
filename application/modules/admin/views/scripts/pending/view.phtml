@@ -1,0 +1,90 @@
+<script type="text/javascript">
+$(document).ready(function() {
+	$('#approve').click(function() {
+    	$('#newStatus').val('approve');
+        $('#referDialog').dialog('open');
+    });
+
+    $('#decline').click(function() {
+    	$('#newStatus').val('decline');
+        $('#referDialog').dialog('open');
+    });
+
+    $('#refer').click(function() {
+    	$('#newStatus').val('refer');
+        $('#referDialog').dialog('open');
+    });
+
+    $('#referDialog').dialog({
+        bgiframe:   true,
+        autoOpen:   false,
+        modal:      true,
+        width:      350,
+        buttons:    {
+            'Process':  function() {
+                $.ajax({
+                    data:   {
+                        pid:		<?php echo $this->id; ?>,
+                        notes:		$('#notes').val(),
+                        newStatus:	$('#newStatus').val()
+                    },
+                    dataType:   'json',
+                    success:    function(rsp, status) {
+                        if(rsp.status == 1) {
+                            window.location = '<?php echo $this->baseUrl(); ?>/admin/pending';
+                        } else {
+                            alert('There was a problem adding the project. Please contact tech support.');
+                        }
+                    },
+                    type:       'POST',
+                    url:        '<?php echo $this->baseUrl();?>/admin/pending/update'
+                });
+            }
+        }
+    });
+});
+</script>
+
+<h1>Project Details for '<?php echo $this->name; ?>'</h1>
+
+<table width="100%">
+	<tbody>
+		<tr>
+			<th width="150">Project Name:</th>
+			<td><?php echo $this->name; ?></td>
+		</tr>
+		<tr>
+			<th>Project Author:</th>
+			<td><?php echo $this->authorName ?></td>
+		</tr>
+		<tr>
+			<th>Date Created:</th>
+			<td><?php echo $this->dateCreated; ?></td>
+		</tr>
+		<tr>
+			<th>Project Description:</th>
+			<td><?php echo $this->description; ?></td>
+		</tr>
+		<tr>
+			<th>ROI Analysis:</th>
+			<td><?php echo $this->analysis; ?></td>
+		</tr>
+	</tbody>
+	<tfoot>
+		<tr>
+			<td colspan="2" align="right">
+				<button id="approve">Approve Project</button>
+				<button id="decline">Decline Project</button>
+				<button id="refer">Refer Project back to Author</button>
+			</td>
+		</tr>
+	</tfoot>
+</table>
+
+<div id="referDialog" title="Refer Project to Author" class="left">
+    <dl>
+        <dt>Notes:</dt>
+            <dd><textarea style="height: 200px; width: 300px" name="notes" id="notes"></textarea>
+    </dl>
+    <input type="hidden" id="newStatus" value="">
+</div>

@@ -1,0 +1,47 @@
+<h1>Projects by User</h1>
+<table width="100%">
+	<thead>
+		<tr>
+			<th>Name</th>
+			<th>Current Projects</th>
+			<th>Number of Projects</th>
+		</tr>
+	</thead>
+	<tbody>
+		<?php
+			$this->results		= $this->results->toArray();
+			$firstRow			= array_shift($this->results);
+			$currentUsername	= $firstRow['name'];
+			$numProjects		= 1;
+			$projects[]			= $firstRow['projectName'];
+
+			foreach($this->results as $row) {
+				if($currentUsername != $row['name']) {
+					echo '<tr>';
+					echo '<td>' . $currentUsername . '</td>';
+					echo '<td>' . implode(', ', $projects);
+					echo '<td align=right>' . $numProjects . '</td>';
+					echo '</tr>';
+
+					$currentUsername	= $row['name'];
+					$numProjects		= 1;
+					$projects			= array();
+					$projects[]			= $row['projectName'];
+				} else {
+					$numProjects++;
+					$projects[]			= $row['projectName'];
+				}
+			}
+			echo '<tr>';
+			echo '<td>' . $currentUsername . '</td>';
+			echo '<td>' . implode(', ', $projects);
+			echo '<td align=right>' . $numProjects . '</td>';
+			echo '</tr>';
+			?>
+	</tbody>
+	<tfoot>
+		<tr>
+			<td colspan="3" align="right">Generated <?php echo date('m-d-y @ h:ia', time()); ?></td>
+		</tr>
+	</tfoot>
+</table>

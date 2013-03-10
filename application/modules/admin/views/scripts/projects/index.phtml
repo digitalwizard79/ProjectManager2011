@@ -1,0 +1,57 @@
+<script type="text/javascript" src="<?php echo $this->baseUrl(); ?>/js/jquery/jquery.jeditable-1.6.0.min.js"></script>
+<script type="text/javascript" src="<?php echo $this->baseUrl(); ?>/js/jquery/jquery.tablesorter-2.0.3.min.js"></script>
+
+<script type="text/javascript">
+    $(document).ready(function() {
+        $('.editable').editable('<?php echo $this->baseUrl(); ?>/admin/projects/setpriority', {
+            indicator:	'Saving...',
+            tooltip:	'Click to Edit...',
+            callback:	function(value, settings) {
+                window.location = "<?php echo $this->baseUrl(); ?>/admin/projects";
+            }
+        });
+
+		$('#projectTable').tablesorter(
+			{sortList: [[5,0,1]]}
+		);
+
+		$('.editSelect').editable('<?php echo $this->baseUrl(); ?>/admin/projects/setdept', {
+			data: 	"{'Accounting':'Accounting', 'Administration':'Administration', 'Claims':'Claims', 'Commercial Lines':'Commercial Lines', 'IT':'IT', 'Multiple':'Multiple', 'Personal Lines':'Personal Lines'}",
+			type:	'select',
+			submit:	'OK'
+		});
+    });
+</script>
+
+<h1>Project Administration</h1>
+
+<table class="stripe" width="100%" id="projectTable">
+	<thead>
+		<tr>
+			<th>Department</th>
+			<th>Project</th>
+			<th>Status</th>
+			<th>Author</th>
+			<th>Date Created</th>
+            <th>Priority</th>
+			<th>Action</th>
+		</tr>
+	</thead>
+	<tbody>
+		<?php if(count($this->projects)): ?>
+			<?php foreach($this->projects as $project): ?>
+				<?php if($project->status < 10): ?>
+					<tr>
+						<td class="editSelect" id="dept_<?php echo $project->id; ?>"><?php echo $project->department; ?></td>
+						<td><a href="<?php echo $this->baseUrl(); ?>/projects/load/project/<?php echo $project->id; ?>"><?php echo $project->name; ?></a></td>
+						<td><?php echo $project->statusName; ?></td>
+						<td><?php echo $project->authorName; ?></td>
+						<td align="right"><?php echo date('m/d/Y', strtotime($project->dateCreated)); ?></td>
+				                <td align="center" id="pri_<?php echo $project->id; ?>" class="editable"><?php echo $project->priority; ?></td>
+						<td align="center"><img src="<?php echo $this->baseUrl(); ?>/images/famfamfam_silk/delete.png"></td>
+					</tr>
+				<?php endif; ?>
+			<?php endforeach; ?>
+		<?php endif; ?>
+	</tbody>
+</table>

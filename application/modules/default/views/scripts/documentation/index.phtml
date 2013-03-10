@@ -1,0 +1,108 @@
+<script type="text/javascript" src="<?php echo $this->baseUrl(); ?>/js/bpm/bpm.jquery.zebra-stripe.js"></script>
+
+<script type="text/javascript">
+function addSignature(section) {
+	$.ajax({
+		data:   {
+			name:		$('#newSig').val(),
+			'section':	section
+		},
+		dataType:   'json',
+		success:    function(rsp, status) {
+			loadSignatures('sdd');
+			$('#newSig').val("");
+		},
+		type:       'POST',
+		url:        '<?php echo $this->baseUrl(); ?>/signatures/add/'
+	});
+}
+
+function loadSignatures(section) {
+	$('#signatures').load('<?php echo $this->baseUrl(); ?>/signatures/generate/type/7');
+}
+
+$(document).ready(function() {
+	$('#fileTable').bpm_stripe();
+
+	loadSignatures('Design');
+
+	$('#addFile').click(function() {
+		$('#addFileDialog').dialog('open');
+	});
+
+	$('#addFileDialog').dialog({
+		bgiframe:	true,
+		autoOpen:	false,
+		modal:		true,
+		buttons:	{
+			'Upload': function() {
+				$('#addFileForm').submit();
+			}
+		}
+	});
+});
+</script>
+
+<h1>Documentation for '<?php echo $this->projectName; ?>'</h1>
+
+<div id="authMessage">
+	<ul>
+		<?php foreach($this->messages as $message): ?>
+			<li><?php echo $message ?></li>
+		<?php endforeach; ?>
+	</ul>
+</div>
+
+<table width="100%" class="stripe" id="fileTable">
+	<thead>
+		<tr>
+			<th>Title</th>
+			<th>Type</th>
+			<th>Last Updated</th>
+			<th>Version</th>
+			<th>Uploaded By</th>
+			<th>Actions</th>
+		</tr>
+	</thead>
+	<tbody>
+		<?php foreach($this->files as $file):?>
+			<tr>
+				<td><a href="<?php echo $this->baseUrl();?>/files/stats/file/<?php echo $file->id?>"><?php echo $file->title; ?></a></td>
+				<td align="center"><?php echo $this->MimeType($file->mimetype); ?></td>
+				<td align="center"><?php echo date('m/d/Y', strtotime($file->dateAdded)); ?></td>
+				<td align="center"><?php echo $file->revision; ?></td>
+				<td><a href="mailto:<?php echo $file->email; ?>"><?php echo $file->name; ?></a></td>
+				<td align="center">
+					<a href="<?php echo $this->baseUrl();?>/files/view/file/<?php echo $file->detailId?>/type/browser">View</a> :
+					<a href="<?php echo $this->baseUrl(); ?>/files/view/file/<?php echo $file->detailId ?>/type/download" target="_new">Download</a>
+				</td>
+			</tr>
+		<?php endforeach; ?>
+	</tbody>
+	<tfoot>
+		<tr>
+			<td colspan="6" align="right"><button id="addFile">Add New File</button></td>
+		</tr>
+	</tfoot>
+</table>
+
+<h2>Signatures</h2>
+<div id="signatures">
+</div>
+
+<div id="addSig">
+<label for="newSig">Name:</label><input type="text" name="newSig" id="newSig">
+<button onClick="addSignature('Documentation');">Add Signature</button>
+</div>
+
+<div id="addFileDialog" class="left" title="Add New File">
+	<form id="addFileForm" method="POST" enctype="multipart/form-data" action="<?php echo $this->baseUrl(); ?>/documentation/addfile">
+	<dl>
+		<dt>Title:</dt>
+			<dd><input type="text" name="title" id="title"></dd>
+		<dt>File:</dt>
+			<dd><input type="file" name="file" id="file"></dd>
+	</dl>
+	<input type="hidden" name="section" id="section" value="documentation">
+	</form>
+</div>

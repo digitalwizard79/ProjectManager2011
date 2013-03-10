@@ -1,0 +1,145 @@
+<?php
+	$sddNotes				= array();
+	$designNotes			= array();
+	$implementationNotes	= array();
+	$debuggingNotes			= array();
+	$installationNotes		= array();
+	$maintenanceNotes		= array();
+
+	foreach($this->notes as $note) {
+		switch($note->sectionId) {
+			case 2:
+				$sddNotes[]	= $note;
+				break;
+			case 3:
+				$designNotes[]	= $note;
+				break;
+			case 4:
+				$implementationNotes[]	= $note;
+				break;
+			case 5:
+				$debuggingNotes[]	= $note;
+				break;
+			case 6:
+				$installationNotes[]	= $note;
+				break;
+			case 7:
+				$maintenanceNotes[]	= $note;
+				break;
+		}
+	}
+?>
+
+<script type="text/javascript" src="<?php echo $this->baseUrl(); ?>/js/jquery/jquery.expander.js"></script>
+<script type="text/javascript" src="<?php echo $this->baseUrl(); ?>/js/tiny_mce/tiny_mce.js"></script>
+
+<script type="text/javascript">
+function addNote(section) {
+	$('#section').val(section);
+	$('#addNoteDialog').dialog('open');
+}
+
+$(document).ready(function() {
+	$('.message_head').click(function() {
+        $(this).next('.message_body').slideToggle(500);
+        return false;
+    });
+
+	$('#addNoteDialog').dialog({
+        bgiframe:   true,
+        autoOpen:   false,
+        modal:      true,
+		width:      525,
+        buttons:    {
+            'Add Note':  function() {
+                $.ajax({
+                   data:   {
+                        title:		$('#title').val(),
+                        text:		$('#text').val(),
+                        //text:		tinyMCE.get('text').getContent(),
+                        section:	$('#section').val()
+                    },
+                    dataType:   'json',
+                    success:    function(rsp, status) {
+                        if(rsp.status == 1) {
+                            window.location = '<?php echo $this->baseUrl(); ?>/notes';
+                        } else {
+                            alert('There was a problem adding the note. Please contact tech support.');
+                        }
+                    },
+                    type:       'POST',
+                    url:        '<?php echo $this->baseUrl();?>/notes/add/'
+                });
+            }
+        }
+    });
+});
+</script>
+
+<h1>Notes for '<?php echo $this->projectName ?>'</h1>
+
+<div>
+	<h2>Software Design</h2>
+	<ul class="message_list">
+		<?php echo $this->partialLoop('notes/_partials/note.phtml', $sddNotes); ?>
+	</ul>
+
+	<div align="right"><button onClick="addNote('2');">Add Note</button></div>
+</div>
+
+<div>
+	<h2>Design Documents</h2>
+	<ul class="expandable">
+		<?php echo $this->partialLoop('notes/_partials/note.phtml', $designNotes); ?>
+	</ul>
+	<div align="right"><button onClick="addNote('3');">Add Note</button></div>
+</div>
+
+<div>
+	<h2>Implementation</h2>
+	<ul class="expandable">
+		<?php echo $this->partialLoop('notes/_partials/note.phtml', $implementationNotes); ?>
+	</ul>
+	<div align="right"><button onClick="addNote('4');">Add Note</button></div>
+</div>
+
+<div>
+	<h2>Debugging</h2>
+	<ul class="expandable">
+		<?php echo $this->partialLoop('notes/_partials/note.phtml', $debuggingNotes); ?>
+	</ul>
+	<div align="right"><button onClick="addNote('5');">Add Note</button></div>
+</div>
+
+<div>
+	<h2>Installation</h2>
+	<ul class="expandable">
+		<?php echo $this->partialLoop('notes/_partials/note.phtml', $installationNotes); ?>
+	</ul>
+	<div align="right"><button onClick="addNote('6');">Add Note</button></div>
+</div>
+
+<div>
+	<h2>Maintenance</h2>
+	<ul class="expandable">
+		<?php echo $this->partialLoop('notes/_partials/note.phtml', $maintenanceNotes); ?>
+	</ul>
+	<div align="right"><button onClick="addNote('7');">Add Note</button></div>
+</div>
+
+<div id="addNoteDialog" class="left" title="Add New Note">
+<dl>
+	<dt>Title:</dt>
+		<dd><input type="text" name="title" id="title"></dd>
+	<dt>Section:</dt>
+		<dd>
+			<select id="section" name="section">
+				<?php foreach($this->sections as $sec): ?>
+					<option value="<?php echo $sec->id ?>"><?php echo $sec->name ?></option>
+				<?php endforeach; ?>
+			</select>
+		</dd>
+	<dt>Text:</dt>
+		<dd><textarea name="text" id="text" style="width: 500px; height: 100px"></textarea></dd>
+</dl>
+</div>

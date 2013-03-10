@@ -1,0 +1,19 @@
+/* 
+    Document   : print
+    Created on : Jul 27, 2009, 11:44:06 AM
+    Author     : tankersleyc
+    Description:
+        Purpose of the stylesheet follows.
+*/
+
+/* 
+   Syntax recommendation http://www.w3.org/TR/REC-CSS2/
+*/
+
+#hd, #navigation, #ft {
+	display:	none;
+}
+
+#content {
+	margin-left:	-200px;
+}
